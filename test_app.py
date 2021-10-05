@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 from requests import get
-from subprocess import run
-from threading import Thread
-import time
-import json
+from subprocess import Popen
+import time, json, pytest
 
 def is_json(myjson):
     try:
@@ -13,15 +11,16 @@ def is_json(myjson):
         return False
     return True
 
-def start_server():
-    run(["go", "run", "main.go"])
 
-Thread(target=start_server, daemon=True).start()
+@pytest.fixture
+def server():
+    p = Popen(["go", "run", "main.go"])
+    time.sleep(3)
+    yield
+    p.terminate()
 
-time.sleep(3)
-
-def test_albums():
-    response = get("http://localhost:8080/albums")
+def test_albums(server):
+    response = get("http://localhost:8088/albums")
     assert response.ok
     assert is_json(response.content)
     data = json.loads(response.content)
@@ -29,4 +28,4 @@ def test_albums():
     assert len(data) > 0
 
 if __name__=="__main__":
-    test_albums()
+    pytest.main()
