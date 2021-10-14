@@ -1,3 +1,3 @@
-# go-crud-app-example
-Go CRUD App Example
+# go-crud-api-example
+Go CRUD API Example
 WIP
